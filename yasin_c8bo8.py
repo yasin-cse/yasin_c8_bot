@@ -5,18 +5,8 @@ import google.generativeai as genai
 API_KEY = "AIzaSyBIcCElyH4XgIo0-lCifSStswGfK6Rj8SA"
 genai.configure(api_key=API_KEY)
 
-# Model Setup
-generation_config = {
-    "temperature": 0.7,
-    "top_p": 0.95,
-    "top_k": 40,
-    "max_output_tokens": 2048,
-}
-
-model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
-    generation_config=generation_config,
-)
+# Model Setup using 1.5 Flash
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 # Page Configuration
 st.set_page_config(page_title="AI Assistant", page_icon="🤖")
@@ -33,22 +23,18 @@ for message in st.session_state.messages:
 
 # Chat Input and Response Logic
 if prompt := st.chat_input("Type your message here..."):
-    # Add User Message to History
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Generate AI Response
     try:
-        chat_session = model.start_chat(history=[])
-        response = chat_session.send_message(prompt)
-        
+        # Simplified response generation
+        response = model.generate_content(prompt)
         full_response = response.text
         
         with st.chat_message("assistant"):
             st.markdown(full_response)
             
-        # Add Assistant Response to History
         st.session_state.messages.append({"role": "assistant", "content": full_response})
         
     except Exception as e:
